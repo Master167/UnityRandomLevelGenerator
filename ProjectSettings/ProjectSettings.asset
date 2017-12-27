@@ -628,7 +628,7 @@ PlayerSettings:
       daydreamIconBackground: {fileID: 0}
   cloudServicesEnabled:
     UNet: 1
-  facebookSdkVersion: 
+  facebookSdkVersion: 7.9.1
   apiCompatibilityLevel: 2
   cloudProjectId: fae5f0e0-41a0-42d1-8128-9bdc11618492
   projectName: UnityRandomLevelGenerator

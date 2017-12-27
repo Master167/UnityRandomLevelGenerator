@@ -47,6 +47,12 @@ public class LevelGeneration : MonoBehaviour {
         // Close extra doors
         currentRoom.GetComponent<BasicRoom>().OpenDoor(currentDirection);
 
+        // Set translation vector for next room,
+        // You know where the door you are coming from it located.
+        // You also know the door you are going to is located.
+        // So set the translation to be how far those doors are offset from their parents' transform locations.
+        throw new System.Exception("Do the things");
+
         // set as previous room and direction
         previousRoom = currentRoom;
         previousDirection = currentDirection;
@@ -101,7 +107,7 @@ public class LevelGeneration : MonoBehaviour {
     {
         // Make this a little more random
 
-        return Direction.Top;
+        return Direction.Right;
     }
 
     private Direction GetOppositeDirection(Direction direction)

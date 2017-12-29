@@ -10,13 +10,12 @@ public class LevelGeneration : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        ////When done, use this to start
-        //Random.InitState(System.Environment.TickCount);
-        Random.InitState(1);
+        // Initialize the Random number generator
+        Random.InitState(System.Environment.TickCount);
 
         if (NumberOfRooms < 1)
         {
-            Debug.Log("Number of rooms for Level Generation is Less then 1");
+            throw new System.Exception("Number of rooms for Level Generation is Less then 1");
         }
 
         GenerateLevel(NumberOfRooms);
@@ -38,7 +37,7 @@ public class LevelGeneration : MonoBehaviour {
         
         // Initialize Level with first room
         // Put room in scene
-        Debug.Log("Starting to generate rooms");
+        //Debug.Log("Starting to generate rooms");
         currentRoom = Instantiate(BasicRoom, transform);
         
         // determine direction
@@ -46,46 +45,24 @@ public class LevelGeneration : MonoBehaviour {
 
         // Close extra doors
         currentRoom.GetComponent<BasicRoom>().OpenDoor(currentDirection);
-
-        // Set translation vector for next room,
-        // You know where the door you are coming from it located.
-        // You also know the door you are going to is located.
-        // So set the translation to be how far those doors are offset from their parents' transform locations.
-        throw new System.Exception("Do the things");
-
+        
         // set as previous room and direction
         previousRoom = currentRoom;
         previousDirection = currentDirection;
         roomsGenarated++;
 
-        Debug.Log("First room generated, Moving to subsequent rooms");
+        //Debug.Log("First room generated, Moving to subsequent rooms");
         while (roomsGenarated < numberOfRooms)
         {
-            Debug.LogFormat("Generating room {0}", roomsGenarated);
+            //Debug.LogFormat("Generating room {0}", roomsGenarated);
             currentRoom = Instantiate(GetNextRoom(), transform);
             currentDirection = ChartNewCourse(previousDirection);
 
             currentRoom.GetComponent<BasicRoom>().CreatePath(currentDirection, GetOppositeDirection(previousDirection));
 
-            //Position the room based on direction
-            switch(currentDirection)
-            {
-                case Direction.Top:
-                    translationVector = new Vector3(0, (currentRoom.GetComponent<BasicRoom>().Height / 2) + (previousRoom.GetComponent<BasicRoom>().Height / 2) + previousRoom.transform.position.y);
-                    break;
-                case Direction.Bottom:
-                    translationVector = new Vector3(0, 0);
-                    break;
-                case Direction.Left:
-                    translationVector = new Vector3(0, 0);
-                    break;
-                case Direction.Right:
-                default:
-                    translationVector = new Vector3((currentRoom.GetComponent<BasicRoom>().Width / 2) + (previousRoom.GetComponent<BasicRoom>().Width / 2) + previousRoom.transform.position.x, 0);
-                    break;
-            }
-            Debug.Log("Translating room");
-            Debug.Log(translationVector);
+            translationVector = GetRoomTranslation(currentRoom, previousRoom, currentDirection, previousDirection);
+            //Debug.Log("Translating room");
+            //Debug.Log(translationVector);
             currentRoom.transform.Translate(translationVector);
 
             // Set values for next iteration
@@ -105,22 +82,32 @@ public class LevelGeneration : MonoBehaviour {
 
     private Direction ChartNewCourse(Direction previousDirection)
     {
-        // Make this a little more random
+        Direction newDirection;
+        // I didn't add left to this because going Left could cause problems with overlap.
+        Direction[] possibleDirections = { Direction.Up, Direction.Down, Direction.Right };
+        int value;
+        do
+        {
+            value = Random.Range(0, possibleDirections.Length);
+            //Debug.LogFormat("Random produced:{0} which means {1} direction", value, possibleDirections[value]);
+            newDirection = possibleDirections[value];
+        } while (newDirection == GetOppositeDirection(previousDirection));
+        
 
-        return Direction.Right;
+        return newDirection;
     }
 
-    private Direction GetOppositeDirection(Direction direction)
+    public static Direction GetOppositeDirection(Direction direction)
     {
         Direction returnValue;
 
         switch(direction)
         {
-            case Direction.Top:
-                returnValue = Direction.Bottom;
+            case Direction.Up:
+                returnValue = Direction.Down;
                 break;
-            case Direction.Bottom:
-                returnValue = Direction.Top;
+            case Direction.Down:
+                returnValue = Direction.Up;
                 break;
             case Direction.Left:
                 returnValue = Direction.Right;
@@ -131,9 +118,68 @@ public class LevelGeneration : MonoBehaviour {
                 break;
         }
 
-        Debug.LogFormat("GetOppositeDirection was given {0} and returned {1}", direction, returnValue);
+        //Debug.LogFormat("GetOppositeDirection was given {0} and returned {1}", direction, returnValue);
 
         return returnValue;
+    }
+
+    private Vector3 GetRoomTranslation(GameObject currentRoom, GameObject previousRoom, Direction currentDirection, Direction previousDirection)
+    {
+        //Debug.LogFormat("GetRoomTranslation was given currentDirection:{0} and previousDirection:{1}", currentDirection, previousDirection);
+        Vector3 translationVector;
+        Transform currentRoomDoorTransform = currentRoom.GetComponent<BasicRoom>().GetRoomTransform(GetOppositeDirection(previousDirection));
+        Transform previousRoomDoorTransform = previousRoom.GetComponent<BasicRoom>().GetRoomTransform(previousDirection);
+
+        //Debug.Log("Current Room Door Position");
+        //Debug.Log(currentRoomDoorTransform.position);
+        //Debug.Log("Current Room Door Local Position");
+        //Debug.Log(currentRoomDoorTransform.localPosition);
+        //Debug.Log("Previous Room Door Position");
+        //Debug.Log(previousRoomDoorTransform.position);
+        //Debug.Log("Previous Room Door Local Position");
+        //Debug.Log(previousRoomDoorTransform.localPosition);
+
+        if (previousDirection == Direction.Up)
+        {
+            translationVector = new Vector3(
+                    System.Math.Abs(currentRoomDoorTransform.localPosition.x) + previousRoomDoorTransform.position.x,
+                    System.Math.Abs(currentRoomDoorTransform.localPosition.y) + previousRoomDoorTransform.position.y,
+                    System.Math.Abs(currentRoomDoorTransform.localPosition.z) + previousRoomDoorTransform.position.z
+            );
+        }
+        else if (previousDirection == Direction.Down)
+        {
+            translationVector = new Vector3(
+                    currentRoomDoorTransform.localPosition.x + previousRoomDoorTransform.position.x,
+                    -currentRoomDoorTransform.localPosition.y + previousRoomDoorTransform.position.y,
+                    currentRoomDoorTransform.localPosition.z + previousRoomDoorTransform.position.z
+            );
+        }
+        else if (previousDirection == Direction.Left)
+        {
+            throw new System.NotImplementedException(string.Format("previousDirection {0} is not implemented", previousDirection));
+            translationVector = new Vector3(
+                    -currentRoomDoorTransform.localPosition.x + previousRoomDoorTransform.position.x,
+                    currentRoomDoorTransform.localPosition.y + previousRoomDoorTransform.position.y,
+                    currentRoomDoorTransform.localPosition.z + previousRoomDoorTransform.position.z
+            );
+        }
+        else
+        {
+            // previousDirection == Direction.Right
+            
+            translationVector = new Vector3(
+                    System.Math.Abs(currentRoomDoorTransform.localPosition.x) + previousRoomDoorTransform.position.x,
+                    System.Math.Abs(currentRoomDoorTransform.localPosition.y) + previousRoomDoorTransform.position.y,
+                    System.Math.Abs(currentRoomDoorTransform.localPosition.z) + previousRoomDoorTransform.position.z
+            );
+            //}
+        }
+
+        //Debug.Log("Resulting Translation Vector");
+        //Debug.Log(translationVector);
+
+        return translationVector;
     }
 }
 
@@ -141,8 +187,8 @@ public class LevelGeneration : MonoBehaviour {
 
 public enum Direction
 {
-    Top,
-    Bottom,
+    Up,
+    Down,
     Left,
     Right
 }

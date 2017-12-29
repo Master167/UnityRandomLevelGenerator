@@ -304,4 +304,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BasicRoom: {fileID: 1500051006363518, guid: 702fc838b824e604aa90c64b9e43cea2, type: 2}
-  NumberOfRooms: 2
+  NumberOfRooms: 5

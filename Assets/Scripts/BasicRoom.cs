@@ -8,16 +8,10 @@ public class BasicRoom : MonoBehaviour {
     public GameObject BottomDoor;
     public GameObject LeftDoor;
     public GameObject RightDoor;
-
-    [HideInInspector]
-    public float Height;
-    [HideInInspector]
-    public float Width;
-
+    
 	// Use this for initialization
 	void Awake () {
-        Height = TopDoor.transform.position.y * 2;
-        Width = RightDoor.transform.position.x * 2;
+        
 	}
 
     //// Update is called once per frame

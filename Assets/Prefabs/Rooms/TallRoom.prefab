@@ -1051,5 +1051,3 @@ MonoBehaviour:
   BottomDoor: {fileID: 1524184902928952}
   LeftDoor: {fileID: 1241965842213492}
   RightDoor: {fileID: 1226316543306894}
-  Height: 0
-  Width: 0

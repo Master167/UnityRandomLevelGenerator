@@ -46,6 +46,8 @@ public class LevelGeneration : MonoBehaviour {
         // Initialize Level with first room
         // Put room in scene
         Debug.Log("Starting to generate rooms");
+        
+        // Remember this will be relative to the LevelGeneration GameObject
         currentRoom = Instantiate(StartingRoom, transform);
         
         // determine direction
@@ -95,17 +97,22 @@ public class LevelGeneration : MonoBehaviour {
 
     private Direction ChartNewCourse(Direction previousDirection)
     {
-        Direction newDirection;
-        // I didn't add left to this because going Left could cause problems with overlap.
-        Direction[] possibleDirections = { Direction.Up, Direction.Down, Direction.Right };
-        int value;
-        do
-        {
-            value = Random.Range(0, possibleDirections.Length);
-            //Debug.LogFormat("Random produced:{0} which means {1} direction", value, possibleDirections[value]);
-            newDirection = possibleDirections[value];
-        } while (newDirection == GetOppositeDirection(previousDirection) && newDirection != OppositeOfStartingDirection);
-        
+        Direction oppositeOfPrevious = GetOppositeDirection(previousDirection);
+
+        List<Direction> possibleDirections = new List<Direction> { Direction.Up, Direction.Down, Direction.Left, Direction.Right };
+
+        //// For a single direction, MAKE SURE ITS THE SAME OF THE STARTING DIRECTION
+        //List<Direction> possibleDirections = new List<Direction> { Direction.Up };
+
+        // To remove directions that we don't want to turn.
+        possibleDirections.Remove(oppositeOfPrevious);
+        possibleDirections.Remove(OppositeOfStartingDirection);
+
+        int value = Random.Range(0, possibleDirections.Count);
+        //Debug.LogFormat("Random produced:{0} which means {1} direction", value, possibleDirections[value]);
+        Direction newDirection = possibleDirections[value];
+
+        //Debug.LogFormat("ChartNewCourse Result:{0}", newDirection);
 
         return newDirection;
     }
@@ -143,14 +150,10 @@ public class LevelGeneration : MonoBehaviour {
         Transform currentRoomDoorTransform = currentRoom.GetComponent<BasicRoom>().GetRoomTransform(GetOppositeDirection(previousDirection));
         Transform previousRoomDoorTransform = previousRoom.GetComponent<BasicRoom>().GetRoomTransform(previousDirection);
 
-        //Debug.Log("Current Room Door Position");
-        //Debug.Log(currentRoomDoorTransform.position);
-        //Debug.Log("Current Room Door Local Position");
-        //Debug.Log(currentRoomDoorTransform.localPosition);
-        //Debug.Log("Previous Room Door Position");
-        //Debug.Log(previousRoomDoorTransform.position);
-        //Debug.Log("Previous Room Door Local Position");
-        //Debug.Log(previousRoomDoorTransform.localPosition);
+        //Debug.LogFormat("Current Room Door Position: {0}", currentRoomDoorTransform.position);
+        //Debug.LogFormat("Current Room Door Local Position: {0}", currentRoomDoorTransform.localPosition);
+        //Debug.LogFormat("Previous Room Door Position: {0}", previousRoomDoorTransform.position);
+        //Debug.LogFormat("Previous Room Door Local Position: {0}", previousRoomDoorTransform.localPosition);
 
         if (previousDirection == Direction.Up)
         {
@@ -170,27 +173,24 @@ public class LevelGeneration : MonoBehaviour {
         }
         else if (previousDirection == Direction.Left)
         {
-            throw new System.NotImplementedException(string.Format("previousDirection {0} is not implemented", previousDirection));
+            // Needs Help
             translationVector = new Vector3(
-                    -currentRoomDoorTransform.localPosition.x + previousRoomDoorTransform.position.x,
-                    currentRoomDoorTransform.localPosition.y + previousRoomDoorTransform.position.y,
-                    currentRoomDoorTransform.localPosition.z + previousRoomDoorTransform.position.z
+                    -System.Math.Abs(currentRoomDoorTransform.localPosition.x) + previousRoomDoorTransform.position.x,
+                    System.Math.Abs(currentRoomDoorTransform.localPosition.y) + previousRoomDoorTransform.position.y,
+                    System.Math.Abs(currentRoomDoorTransform.localPosition.z) + previousRoomDoorTransform.position.z
             );
         }
         else
         {
             // previousDirection == Direction.Right
-            
             translationVector = new Vector3(
                     System.Math.Abs(currentRoomDoorTransform.localPosition.x) + previousRoomDoorTransform.position.x,
                     System.Math.Abs(currentRoomDoorTransform.localPosition.y) + previousRoomDoorTransform.position.y,
                     System.Math.Abs(currentRoomDoorTransform.localPosition.z) + previousRoomDoorTransform.position.z
             );
-            //}
         }
 
-        //Debug.Log("Resulting Translation Vector");
-        //Debug.Log(translationVector);
+        //Debug.LogFormat("Resulting Translation Vector: {0}", translationVector);
 
         return translationVector;
     }

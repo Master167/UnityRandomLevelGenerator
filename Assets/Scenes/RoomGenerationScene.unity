@@ -308,6 +308,10 @@ MonoBehaviour:
   StartingDirection: 3
   AvailableRooms:
   - {fileID: 1500051006363518, guid: 702fc838b824e604aa90c64b9e43cea2, type: 2}
+  - {fileID: 1326408222002966, guid: b1e57aca65dda2347aad59bfc6da0b0e, type: 2}
   - {fileID: 1063734865345010, guid: a48a7b0331f0e1549be844457417d68d, type: 2}
+  - {fileID: 1261154986624738, guid: 5887e15085e7fa746ad1c91e149554ef, type: 2}
+  - {fileID: 1019254670662046, guid: 3f4c389779a71054589a9812593834fd, type: 2}
   - {fileID: 1626710556830776, guid: 799058d18db61434691fcf109e50f482, type: 2}
+  - {fileID: 1832790207109342, guid: e0e89d5ac6f18fa4eb615db2a455157f, type: 2}
   NumberOfRooms: 5

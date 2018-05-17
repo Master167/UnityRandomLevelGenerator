@@ -65,8 +65,9 @@ public class LevelGeneration : MonoBehaviour {
         while (roomsGenarated < numberOfRooms)
         {
             //Debug.LogFormat("Generating room {0}", roomsGenarated);
-            currentRoom = Instantiate(GetNextRoom(), transform);
             currentDirection = ChartNewCourse(previousDirection);
+
+            currentRoom = Instantiate(GetNextRoom(currentDirection), transform);
 
             currentRoom.GetComponent<BasicRoom>().CreatePath(currentDirection, GetOppositeDirection(previousDirection));
 
@@ -84,13 +85,22 @@ public class LevelGeneration : MonoBehaviour {
         return;
     }
 
-    private GameObject GetNextRoom()
+    private GameObject GetNextRoom(Direction nextDirection)
     {
-        // Get a random value
-        var value = Random.Range(0, AvailableRooms.Count);
+        GameObject selectedRoom;
+        int count = 0;
+        do
+        {
+            // Get a random value
+            var value = Random.Range(0, AvailableRooms.Count);
 
-        // Get a random room
-        GameObject selectedRoom = AvailableRooms[value];
+            // Get a random room
+            selectedRoom = AvailableRooms[value];
+
+            count++;
+            Debug.LogFormat("Selecting room {0}", count);
+            // Check that room works for new direction
+        } while (!selectedRoom.GetComponent<BasicRoom>().HasDirection(nextDirection));
 
         return selectedRoom;
     }
@@ -143,9 +153,13 @@ public class LevelGeneration : MonoBehaviour {
         return returnValue;
     }
 
+
+    // This is not translating correctly for the StairRoom if Current = Up and Previous = Right
+    // Also need to figure out a way to indicate what direction a room was designed for a player to go through.
+    // Like From Top to Bottom or Left to Right.
     private Vector3 GetRoomTranslation(GameObject currentRoom, GameObject previousRoom, Direction currentDirection, Direction previousDirection)
     {
-        //Debug.LogFormat("GetRoomTranslation was given currentDirection:{0} and previousDirection:{1}", currentDirection, previousDirection);
+        Debug.LogFormat("GetRoomTranslation was given currentDirection:{0} and previousDirection:{1}", currentDirection, previousDirection);
         Vector3 translationVector;
         Transform currentRoomDoorTransform = currentRoom.GetComponent<BasicRoom>().GetRoomTransform(GetOppositeDirection(previousDirection));
         Transform previousRoomDoorTransform = previousRoom.GetComponent<BasicRoom>().GetRoomTransform(previousDirection);

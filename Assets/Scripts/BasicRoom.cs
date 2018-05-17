@@ -23,21 +23,22 @@ public class BasicRoom : MonoBehaviour {
     {
         //Debug.LogFormat("Closing Door {0}", doorToClose);
         // Close the door by activating the door object
-        switch(doorToClose)
+        if (doorToClose == Direction.Up && TopDoor != null)
         {
-            case Direction.Up:
-                TopDoor.SetActive(true);
-                break;
-            case Direction.Down:
-                BottomDoor.SetActive(true);
-                break;
-            case Direction.Left:
-                LeftDoor.SetActive(true);
-                break;
-            case Direction.Right:
-            default:
-                RightDoor.SetActive(true);
-                break;
+            TopDoor.SetActive(true);
+        }
+        else if (doorToClose == Direction.Down && BottomDoor != null)
+        {
+            BottomDoor.SetActive(true);
+        }
+        else if (doorToClose == Direction.Left && LeftDoor != null)
+        {
+            LeftDoor.SetActive(true);
+        }
+        // doorToClose == Direction.Right
+        else if (RightDoor != null)
+        {
+            RightDoor.SetActive(true);
         }
 
         return;
@@ -47,26 +48,27 @@ public class BasicRoom : MonoBehaviour {
     {
         //Debug.LogFormat("Opening Door {0}", doorToOpen);
         // Open the door by deactivating the door object
-        switch (doorToOpen)
+        if (doorToOpen == Direction.Up && TopDoor != null)
         {
-            case Direction.Up:
-                TopDoor.SetActive(false);
-                break;
-            case Direction.Down:
-                BottomDoor.SetActive(false);
-                break;
-            case Direction.Left:
-                LeftDoor.SetActive(false);
-                break;
-            case Direction.Right:
-            default:
-                RightDoor.SetActive(false);
-                break;
+            TopDoor.SetActive(false);
+        }
+        else if (doorToOpen == Direction.Down && BottomDoor != null)
+        {
+            BottomDoor.SetActive(false);
+        }
+        else if (doorToOpen == Direction.Left && LeftDoor != null)
+        {
+            LeftDoor.SetActive(false);
+        }
+        // doorToOpen == Direction.Right
+        else if (RightDoor != null)
+        {
+            RightDoor.SetActive(false);
         }
 
         return;
     }
-
+    
     public void CreatePath(Direction newDirection, Direction previousDirection)
     {
         //Debug.LogFormat("Charting Course from {0} to {1}", previousDirection, newDirection);
@@ -114,5 +116,35 @@ public class BasicRoom : MonoBehaviour {
         }
 
         return returnValue;
+    }
+
+    /// <summary>
+    /// Returns true if room has door for incoming direction
+    /// </summary>
+    /// <param name="incomingDirection">Direction you'd like to go</param>
+    /// <returns></returns>
+    public bool HasDirection(Direction incomingDirection)
+    {
+        bool hasDirection = false;
+
+        switch (incomingDirection)
+        {
+            case Direction.Up:
+                hasDirection = (TopDoor != null);
+                break;
+            case Direction.Down:
+                hasDirection = (BottomDoor != null);
+                break;
+            case Direction.Left:
+                hasDirection = (LeftDoor != null);
+                break;
+            case Direction.Right:
+            default:
+                hasDirection = (RightDoor != null);
+                break;
+        }
+        Debug.LogFormat("Room {0} {1} {2}", gameObject.name, (hasDirection) ? "has" : "does not have", incomingDirection);
+
+        return hasDirection;
     }
 }

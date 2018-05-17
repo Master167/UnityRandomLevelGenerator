@@ -1,0 +1,5 @@
+These sprite sheets are taken from Mega Man X3 on the SNES.
+
+This game was developed and published by Capcom.
+
+I am using this to further the proof of concept of this project.

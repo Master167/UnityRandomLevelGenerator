@@ -16,6 +16,18 @@ Considering I didn't make one. No.
 Next Goal:
 More path determination from the Level Generator to the rooms. I'll need to figure out a way to tell the Level Generator which direction the next room is open to from the current room.
 
+Date:
+May 24, 2018
+
+Summary:
+So, I started moving the direction decision making into the room script. I gave the room a set of boolean variables that I can manipulate in the Editor for each room that I create. Then I created a new method that takes the incoming direction and returns the outgoing direction. I also changed the HasDirection() from checking for a reference to checking a boolean. This will give the LevelGeneration script the ability to choose the room based on the room's design.
+
+Accomplished last goal?:
+Not quite, due to an event I forgotten about I had to cut dev time today short. But I got started!
+
+Next Goal:
+Re-work Level Generation script to use new methods
+
 
 -----TEMPLATE------
 Date:

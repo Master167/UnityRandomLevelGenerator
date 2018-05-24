@@ -19,7 +19,7 @@ public class LevelGeneration : MonoBehaviour {
         // Initialize the Random number generator
         Random.InitState(System.Environment.TickCount);
 
-        OppositeOfStartingDirection = GetOppositeDirection(StartingDirection);
+        OppositeOfStartingDirection = Constants.GetOppositeDirection(StartingDirection);
 
         if (NumberOfRooms < 1)
         {
@@ -107,7 +107,7 @@ public class LevelGeneration : MonoBehaviour {
 
     private Direction ChartNewCourse(Direction previousDirection)
     {
-        Direction oppositeOfPrevious = GetOppositeDirection(previousDirection);
+        Direction oppositeOfPrevious = Constants.GetOppositeDirection(previousDirection);
 
         List<Direction> possibleDirections = new List<Direction> { Direction.Up, Direction.Down, Direction.Left, Direction.Right };
 
@@ -127,33 +127,6 @@ public class LevelGeneration : MonoBehaviour {
         return newDirection;
     }
 
-    public static Direction GetOppositeDirection(Direction direction)
-    {
-        Direction returnValue;
-
-        switch(direction)
-        {
-            case Direction.Up:
-                returnValue = Direction.Down;
-                break;
-            case Direction.Down:
-                returnValue = Direction.Up;
-                break;
-            case Direction.Left:
-                returnValue = Direction.Right;
-                break;
-            case Direction.Right:
-            default:
-                returnValue = Direction.Left;
-                break;
-        }
-
-        //Debug.LogFormat("GetOppositeDirection was given {0} and returned {1}", direction, returnValue);
-
-        return returnValue;
-    }
-
-
     // This is not translating correctly for the StairRoom if Current = Up and Previous = Right
     // Also need to figure out a way to indicate what direction a room was designed for a player to go through.
     // Like From Top to Bottom or Left to Right.
@@ -161,7 +134,7 @@ public class LevelGeneration : MonoBehaviour {
     {
         Debug.LogFormat("GetRoomTranslation was given currentDirection:{0} and previousDirection:{1}", currentDirection, previousDirection);
         Vector3 translationVector;
-        Transform currentRoomDoorTransform = currentRoom.GetComponent<BasicRoom>().GetRoomTransform(GetOppositeDirection(previousDirection));
+        Transform currentRoomDoorTransform = currentRoom.GetComponent<BasicRoom>().GetRoomTransform(Constants.GetOppositeDirection(previousDirection));
         Transform previousRoomDoorTransform = previousRoom.GetComponent<BasicRoom>().GetRoomTransform(previousDirection);
 
         //Debug.LogFormat("Current Room Door Position: {0}", currentRoomDoorTransform.position);
@@ -208,14 +181,4 @@ public class LevelGeneration : MonoBehaviour {
 
         return translationVector;
     }
-}
-
-
-
-public enum Direction
-{
-    Up,
-    Down,
-    Left,
-    Right
 }

@@ -1,0 +1,27 @@
+I read on Gamesutra that aspiring game developers need to develop a portfolio of games. So, I started with this game. But I also read that employers are curious about the process that you used and how you overcame problems during development. Since I'm updating Visual Studio which means development with Unity has stopped, I'll start this journal. What I'll do for myself is put this into the following format. Date, Summary, accomplished last goal, next goal.
+
+Date:
+May 23, 2018
+
+Summary:
+This git repository is for a 2D level generator built in Unity3D that create a path for a platform character to run through. The idea has come from several rogue-likes that I've played over the last couple of years like Splunkey, Crypt of the Necrodancer, 20XX, and Rogue Legacy. The levels would be generated from a series of designed rooms with each room having a set of doors to align with each other. The idea behind that is to make a room for the character to go through with some enemies to fight or platforming challenges. My goal is to develop this level generator to be solid enough that I can create any room and the player would a path through to the end by lining up the doors to each room.
+
+Right now, I don't have anything in my rooms since I don't have a character to move, actions for the character, or enemies to go against. This means that I could design challenges, but I wouldn't be able to play test them to make sure players could overcome those obstacles. Designing the player character will be the next item on my list once I have a level generation that fits my desires.
+
+At first, I was just using a simple square room with four walls and door on each to create a path. I started creating rooms that were more rectangular without a problem. So, I decided to create a room more abstract with a stair case for the floor. This showed me a few problems with my current generation method. The first being that the placement of the room wasn't always correct if the door wasn't in the middle of adjacent wall. The other being that too much randomness was in the Level Generator and not in the rooms themselves. This means that I wouldn't be able to design a room that was meant to be run through left to right that the Level Generator would respect.
+
+Accomplished last goal:
+Considering I didn't make one. No.
+
+Next Goal:
+More path determination from the Level Generator to the rooms. I'll need to figure out a way to tell the Level Generator which direction the next room is open to from the current room.
+
+
+-----TEMPLATE------
+Date:
+
+Summary:
+
+Accomplished last goal?:
+
+Next Goal:

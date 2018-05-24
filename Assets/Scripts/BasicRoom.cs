@@ -8,17 +8,53 @@ public class BasicRoom : MonoBehaviour {
     public GameObject BottomDoor;
     public GameObject LeftDoor;
     public GameObject RightDoor;
-    
-	// Use this for initialization
-	void Awake () {
-        
-	}
+
+    // A set of variables that I can set in the Editor to tell the LevelGeneration script
+    // what the direction the room is designed to be run through.
+    public bool EnterFromTop;
+    public bool EnterFromBottom;
+    public bool EnterFromLeft;
+    public bool EnterFromRight;
+
+    public bool ExitToTop;
+    public bool ExitToBottom;
+    public bool ExitToLeft;
+    public bool ExitToRight;
+
+    // To be used in the get exit direction
+    private List<Direction> exitDirections;
+
+    // Use this for initialization
+    void Awake()
+    {
+        // Setup the exitDirection list for this room.
+        if (ExitToTop)
+        {
+            exitDirections.Add(Direction.Up);
+        }
+        if (ExitToBottom)
+        {
+            exitDirections.Add(Direction.Down);
+        }
+        if (ExitToLeft)
+        {
+            exitDirections.Add(Direction.Left);
+        }
+        if (ExitToRight)
+        {
+            exitDirections.Add(Direction.Down);
+        }
+    }
 
     //// Update is called once per frame
     //void Update () {
 
     //}
 
+    /// <summary>
+    /// Close the door in the direction desired
+    /// </summary>
+    /// <param name="doorToClose"></param>
     public void CloseDoor(Direction doorToClose)
     {
         //Debug.LogFormat("Closing Door {0}", doorToClose);
@@ -44,6 +80,10 @@ public class BasicRoom : MonoBehaviour {
         return;
     }
 
+    /// <summary>
+    /// Open the door in the direction desired
+    /// </summary>
+    /// <param name="doorToOpen"></param>
     public void OpenDoor(Direction doorToOpen)
     {
         //Debug.LogFormat("Opening Door {0}", doorToOpen);
@@ -68,7 +108,14 @@ public class BasicRoom : MonoBehaviour {
 
         return;
     }
-    
+
+    /* Commented out because I don't think I'll need this with the new direction.
+    // <summary>
+    /// Creates a path from the previousDirection to the newDirection by ensuring that 
+    /// the doors open to travel through and extra directions are closed.
+    /// </summary>
+    /// <param name="newDirection"></param>
+    /// <param name="previousDirection"></param>
     public void CreatePath(Direction newDirection, Direction previousDirection)
     {
         //Debug.LogFormat("Charting Course from {0} to {1}", previousDirection, newDirection);
@@ -76,8 +123,8 @@ public class BasicRoom : MonoBehaviour {
         {
             throw new System.Exception("newDirection and previousDirection are the same");
         }
-        
-        foreach(Direction direction in System.Enum.GetValues(typeof(Direction)))
+
+        foreach (Direction direction in System.Enum.GetValues(typeof(Direction)))
         {
             if (direction != previousDirection && direction != newDirection)
             {
@@ -88,12 +135,18 @@ public class BasicRoom : MonoBehaviour {
                 OpenDoor(direction);
             }
         }
-        
+
         return;
     }
+    */
 
-    // This method will only work if there is one door in each direction.
-    // Re-work this if you implement multiple doors in each direction
+    /// <summary>
+    /// Returns the transform for the door of the direction passed in.
+    /// Dev Note: This method will only work if there is one door in each direction.
+    /// Re-work this if you implement multiple doors in each direction.
+    /// </summary>
+    /// <param name="doorDirection"></param>
+    /// <returns></returns>
     public Transform GetRoomTransform(Direction doorDirection)
     {
         Transform returnValue;
@@ -120,6 +173,7 @@ public class BasicRoom : MonoBehaviour {
 
     /// <summary>
     /// Returns true if room has door for incoming direction
+    /// Dev Note: Could just look at the public variable instead of calling a function.
     /// </summary>
     /// <param name="incomingDirection">Direction you'd like to go</param>
     /// <returns></returns>
@@ -130,21 +184,45 @@ public class BasicRoom : MonoBehaviour {
         switch (incomingDirection)
         {
             case Direction.Up:
-                hasDirection = (TopDoor != null);
+                hasDirection = EnterFromTop;
                 break;
             case Direction.Down:
-                hasDirection = (BottomDoor != null);
+                hasDirection = EnterFromBottom;
                 break;
             case Direction.Left:
-                hasDirection = (LeftDoor != null);
+                hasDirection = EnterFromLeft;
                 break;
             case Direction.Right:
             default:
-                hasDirection = (RightDoor != null);
+                hasDirection = EnterFromRight;
                 break;
         }
-        Debug.LogFormat("Room {0} {1} {2}", gameObject.name, (hasDirection) ? "has" : "does not have", incomingDirection);
+        //Debug.LogFormat("Room {0} {1} {2}", gameObject.name, (hasDirection) ? "has" : "does not have", incomingDirection);
 
         return hasDirection;
+    }
+
+    /// <summary>
+    /// Using provided incomingDirection, room will determine which direction to travel through.
+    /// Returning the direction the player will be coming from.
+    /// </summary>
+    /// <param name="incomingDirection"></param>
+    /// <returns></returns>
+    public Direction GetExitDirection(Direction incomingDirection)
+    {
+        // Check the player has open door.
+        OpenDoor(incomingDirection);
+
+        // Determine which to exit
+        var randomNumber = Random.Range(0, exitDirections.Count);
+
+        // Return the direction of the door
+
+        return exitDirections[randomNumber];
+        /*
+         * Returning the direction that the player is coming from to the Level generator
+         * will allow it to find a room the is open to the new direction.
+         * I can always use the GetDoorTransform() to determine where to put the room.
+         */
     }
 }

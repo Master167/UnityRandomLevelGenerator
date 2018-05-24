@@ -19,6 +19,9 @@ public class LevelGeneration : MonoBehaviour {
         // Initialize the Random number generator
         Random.InitState(System.Environment.TickCount);
 
+        // PLace this here to stop Unity if I start it.
+        throw new System.Exception("Remove this once you're ready to test the new logic");
+
         OppositeOfStartingDirection = Constants.GetOppositeDirection(StartingDirection);
 
         if (NumberOfRooms < 1)
@@ -69,7 +72,7 @@ public class LevelGeneration : MonoBehaviour {
 
             currentRoom = Instantiate(GetNextRoom(currentDirection), transform);
 
-            currentRoom.GetComponent<BasicRoom>().CreatePath(currentDirection, GetOppositeDirection(previousDirection));
+            //currentRoom.GetComponent<BasicRoom>().CreatePath(currentDirection, Constants.GetOppositeDirection(previousDirection));
 
             translationVector = GetRoomTranslation(currentRoom, previousRoom, currentDirection, previousDirection);
             //Debug.Log("Translating room");

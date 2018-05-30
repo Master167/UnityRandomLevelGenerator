@@ -27,6 +27,8 @@ public class BasicRoom : MonoBehaviour {
     // Use this for initialization
     void Awake()
     {
+        exitDirections = new List<Direction>();
+
         // Setup the exitDirection list for this room.
         if (ExitToTop)
         {
@@ -42,7 +44,7 @@ public class BasicRoom : MonoBehaviour {
         }
         if (ExitToRight)
         {
-            exitDirections.Add(Direction.Down);
+            exitDirections.Add(Direction.Right);
         }
     }
 
@@ -212,13 +214,17 @@ public class BasicRoom : MonoBehaviour {
     {
         // Check the player has open door.
         OpenDoor(incomingDirection);
+        
+        // Remove the direction we're coming in from
+        exitDirections.Remove(incomingDirection);
 
         // Determine which to exit
         var randomNumber = Random.Range(0, exitDirections.Count);
+        
+        var newDirection = exitDirections[randomNumber];
 
         // Return the direction of the door
-
-        return exitDirections[randomNumber];
+        return newDirection;
         /*
          * Returning the direction that the player is coming from to the Level generator
          * will allow it to find a room the is open to the new direction.

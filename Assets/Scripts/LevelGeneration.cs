@@ -18,10 +18,7 @@ public class LevelGeneration : MonoBehaviour {
 	void Start () {
         // Initialize the Random number generator
         Random.InitState(System.Environment.TickCount);
-
-        // PLace this here to stop Unity if I start it.
-        throw new System.Exception("Remove this once you're ready to test the new logic");
-
+        
         OppositeOfStartingDirection = Constants.GetOppositeDirection(StartingDirection);
 
         if (NumberOfRooms < 1)
@@ -42,8 +39,8 @@ public class LevelGeneration : MonoBehaviour {
         int roomsGenarated = 0;
         GameObject previousRoom;
         Direction previousDirection;
-        GameObject currentRoom;
-        Direction currentDirection;
+        GameObject newRoom;
+        Direction newDirection;
         Vector3 translationVector;
 
         // Initialize Level with first room
@@ -51,37 +48,46 @@ public class LevelGeneration : MonoBehaviour {
         Debug.Log("Starting to generate rooms");
         
         // Remember this will be relative to the LevelGeneration GameObject
-        currentRoom = Instantiate(StartingRoom, transform);
+        newRoom = Instantiate(StartingRoom, transform);
         
         // determine direction
-        currentDirection = StartingDirection;
+        newDirection = StartingDirection;
 
-        // Close extra doors
-        currentRoom.GetComponent<BasicRoom>().OpenDoor(currentDirection);
+        // Open the outgoing door
+        newRoom.GetComponent<BasicRoom>().OpenDoor(newDirection);
         
         // set as previous room and direction
-        previousRoom = currentRoom;
-        previousDirection = currentDirection;
+        previousRoom = newRoom;
+        previousDirection = newDirection;
         roomsGenarated++;
 
         Debug.Log("First room generated, Moving to subsequent rooms");
         while (roomsGenarated < numberOfRooms)
         {
-            //Debug.LogFormat("Generating room {0}", roomsGenarated);
-            currentDirection = ChartNewCourse(previousDirection);
+            Debug.LogFormat("Generating room {0}", roomsGenarated);
+            //newDirection = previousRoom.GetComponent<BasicRoom>().GetExitDirection(previousDirection);
 
-            currentRoom = Instantiate(GetNextRoom(currentDirection), transform);
+            newRoom = GetNextRoom(Constants.GetOppositeDirection(previousDirection));
 
-            //currentRoom.GetComponent<BasicRoom>().CreatePath(currentDirection, Constants.GetOppositeDirection(previousDirection));
+            // Using the Level Generator game object's transform, because we want all the rooms to be children of the level generator
+            newRoom = Instantiate(newRoom, transform);
 
-            translationVector = GetRoomTranslation(currentRoom, previousRoom, currentDirection, previousDirection);
+            // Open the newRoom's door
+            newRoom.GetComponent<BasicRoom>().OpenDoor(Constants.GetOppositeDirection(previousDirection));
+
+            // Move the new room
+            translationVector = GetRoomTranslation(previousDirection, newRoom, previousRoom);
             //Debug.Log("Translating room");
             //Debug.Log(translationVector);
-            currentRoom.transform.Translate(translationVector);
+            newRoom.transform.Translate(translationVector);
 
             // Set values for next iteration
-            previousDirection = currentDirection;
-            previousRoom = currentRoom;
+            newDirection = previousRoom.GetComponent<BasicRoom>().GetExitDirection(previousDirection);
+
+            Debug.LogFormat("PreviousDirection: {0} NewDirection: {1}", previousDirection, newDirection);
+
+            previousDirection = newDirection;
+            previousRoom = newRoom;
             roomsGenarated++;
         }
 
@@ -92,6 +98,10 @@ public class LevelGeneration : MonoBehaviour {
     {
         GameObject selectedRoom;
         int count = 0;
+
+        // Remove this once you're done working on this
+        int errorCount = AvailableRooms.Count * 2;
+
         do
         {
             // Get a random value
@@ -101,13 +111,20 @@ public class LevelGeneration : MonoBehaviour {
             selectedRoom = AvailableRooms[value];
 
             count++;
-            Debug.LogFormat("Selecting room {0}", count);
+            //Debug.LogFormat("Selecting room {0}", count);
+
+            if (count > errorCount)
+            {
+                throw new System.Exception("GetNextRoom selection unable to find room for direction: " + nextDirection);
+            }
+
             // Check that room works for new direction
-        } while (!selectedRoom.GetComponent<BasicRoom>().HasDirection(nextDirection));
+        } while (!selectedRoom.GetComponent<BasicRoom>().HasDirection(Constants.GetOppositeDirection(nextDirection)));
 
         return selectedRoom;
     }
 
+    /* Commented out for new direction
     private Direction ChartNewCourse(Direction previousDirection)
     {
         Direction oppositeOfPrevious = Constants.GetOppositeDirection(previousDirection);
@@ -129,6 +146,7 @@ public class LevelGeneration : MonoBehaviour {
 
         return newDirection;
     }
+    */
 
     // This is not translating correctly for the StairRoom if Current = Up and Previous = Right
     // Also need to figure out a way to indicate what direction a room was designed for a player to go through.

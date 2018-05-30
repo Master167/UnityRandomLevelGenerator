@@ -41,3 +41,6 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/SampleScenes/Scenes/RollerBall.unity
     guid: 7eaa63fd5f544054c91b4364fe194584
+  - enabled: 1
+    path: Assets/Scenes/RoomGenerationScene.unity
+    guid: 09cc0e2f6229a3d4ca5d10d974cc3865

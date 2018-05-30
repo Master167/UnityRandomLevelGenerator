@@ -1051,3 +1051,11 @@ MonoBehaviour:
   BottomDoor: {fileID: 1258405859227468}
   LeftDoor: {fileID: 1316753336227922}
   RightDoor: {fileID: 1228121877516950}
+  EnterFromTop: 1
+  EnterFromBottom: 1
+  EnterFromLeft: 1
+  EnterFromRight: 1
+  ExitToTop: 1
+  ExitToBottom: 1
+  ExitToLeft: 1
+  ExitToRight: 1

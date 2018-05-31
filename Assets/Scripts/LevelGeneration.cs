@@ -45,7 +45,7 @@ public class LevelGeneration : MonoBehaviour {
 
         // Initialize Level with first room
         // Put room in scene
-        Debug.Log("Starting to generate rooms");
+        //Debug.Log("Starting to generate rooms");
         
         // Remember this will be relative to the LevelGeneration GameObject
         newRoom = Instantiate(StartingRoom, transform);
@@ -61,7 +61,7 @@ public class LevelGeneration : MonoBehaviour {
         previousDirection = newDirection;
         roomsGenarated++;
 
-        Debug.Log("First room generated, Moving to subsequent rooms");
+        //Debug.Log("First room generated, Moving to subsequent rooms");
         while (roomsGenarated < numberOfRooms)
         {
             Debug.LogFormat("Generating room {0}", roomsGenarated);
@@ -84,7 +84,7 @@ public class LevelGeneration : MonoBehaviour {
             // Set values for next iteration
             newDirection = previousRoom.GetComponent<BasicRoom>().GetExitDirection(previousDirection);
 
-            Debug.LogFormat("PreviousDirection: {0} NewDirection: {1}", previousDirection, newDirection);
+            //Debug.LogFormat("PreviousDirection: {0} NewDirection: {1}", previousDirection, newDirection);
 
             previousDirection = newDirection;
             previousRoom = newRoom;
@@ -148,57 +148,75 @@ public class LevelGeneration : MonoBehaviour {
     }
     */
 
-    // This is not translating correctly for the StairRoom if Current = Up and Previous = Right
+    // This is not translating correctly for the StairRoom if New = Up and Previous = Right
     // Also need to figure out a way to indicate what direction a room was designed for a player to go through.
     // Like From Top to Bottom or Left to Right.
-    private Vector3 GetRoomTranslation(GameObject currentRoom, GameObject previousRoom, Direction currentDirection, Direction previousDirection)
+    /// <summary>
+    /// Give the previous direction, newRoom, and previousRoom.
+    /// Build the resulting vector to move the newRoom to line up
+    /// with the previousRoom
+    /// </summary>
+    /// <param name="previousDirection"></param>
+    /// <param name="newRoom"></param>
+    /// <param name="previousRoom"></param>
+    /// <returns></returns>
+    private Vector3 GetRoomTranslation(Direction previousDirection, GameObject newRoom, GameObject previousRoom)
     {
-        Debug.LogFormat("GetRoomTranslation was given currentDirection:{0} and previousDirection:{1}", currentDirection, previousDirection);
-        Vector3 translationVector;
-        Transform currentRoomDoorTransform = currentRoom.GetComponent<BasicRoom>().GetRoomTransform(Constants.GetOppositeDirection(previousDirection));
-        Transform previousRoomDoorTransform = previousRoom.GetComponent<BasicRoom>().GetRoomTransform(previousDirection);
-
-        //Debug.LogFormat("Current Room Door Position: {0}", currentRoomDoorTransform.position);
-        //Debug.LogFormat("Current Room Door Local Position: {0}", currentRoomDoorTransform.localPosition);
-        //Debug.LogFormat("Previous Room Door Position: {0}", previousRoomDoorTransform.position);
-        //Debug.LogFormat("Previous Room Door Local Position: {0}", previousRoomDoorTransform.localPosition);
-
+        var newDirection = Constants.GetOppositeDirection(previousDirection);
+        Vector3 translationVector = new Vector3();
+        
         if (previousDirection == Direction.Up)
         {
-            translationVector = new Vector3(
-                    System.Math.Abs(currentRoomDoorTransform.localPosition.x) + previousRoomDoorTransform.position.x,
-                    System.Math.Abs(currentRoomDoorTransform.localPosition.y) + previousRoomDoorTransform.position.y,
-                    System.Math.Abs(currentRoomDoorTransform.localPosition.z) + previousRoomDoorTransform.position.z
-            );
+            //translationVector = new Vector3(
+            //        System.Math.Abs(currentRoomDoorTransform.localPosition.x) + previousRoomDoorTransform.position.x,
+            //        System.Math.Abs(currentRoomDoorTransform.localPosition.y) + previousRoomDoorTransform.position.y,
+            //        System.Math.Abs(currentRoomDoorTransform.localPosition.z) + previousRoomDoorTransform.position.z
+            //);
         }
         else if (previousDirection == Direction.Down)
         {
-            translationVector = new Vector3(
-                    currentRoomDoorTransform.localPosition.x + previousRoomDoorTransform.position.x,
-                    -currentRoomDoorTransform.localPosition.y + previousRoomDoorTransform.position.y,
-                    currentRoomDoorTransform.localPosition.z + previousRoomDoorTransform.position.z
-            );
+            //translationVector = new Vector3(
+            //        currentRoomDoorTransform.localPosition.x + previousRoomDoorTransform.position.x,
+            //        -currentRoomDoorTransform.localPosition.y + previousRoomDoorTransform.position.y,
+            //        currentRoomDoorTransform.localPosition.z + previousRoomDoorTransform.position.z
+            //);
         }
         else if (previousDirection == Direction.Left)
         {
-            // Needs Help
-            translationVector = new Vector3(
-                    -System.Math.Abs(currentRoomDoorTransform.localPosition.x) + previousRoomDoorTransform.position.x,
-                    System.Math.Abs(currentRoomDoorTransform.localPosition.y) + previousRoomDoorTransform.position.y,
-                    System.Math.Abs(currentRoomDoorTransform.localPosition.z) + previousRoomDoorTransform.position.z
-            );
+            //// Needs Help 
+            //translationVector = new Vector3(
+            //        -System.Math.Abs(currentRoomDoorTransform.localPosition.x) + previousRoomDoorTransform.position.x,
+            //        System.Math.Abs(currentRoomDoorTransform.localPosition.y) + previousRoomDoorTransform.position.y,
+            //        System.Math.Abs(currentRoomDoorTransform.localPosition.z) + previousRoomDoorTransform.position.z
+            //);
         }
         else
         {
-            // previousDirection == Direction.Right
-            translationVector = new Vector3(
-                    System.Math.Abs(currentRoomDoorTransform.localPosition.x) + previousRoomDoorTransform.position.x,
-                    System.Math.Abs(currentRoomDoorTransform.localPosition.y) + previousRoomDoorTransform.position.y,
-                    System.Math.Abs(currentRoomDoorTransform.localPosition.z) + previousRoomDoorTransform.position.z
+            //previousDirection == Direction.Right
+            Debug.LogFormat("Moving Right");
+
+            // Move the door to the previousRoom position
+            var previousRoomPositionVector = previousRoom.transform.position;
+
+            // Calculate a vector for how the doors need to align
+            var previousDoorTransform = previousRoom.GetComponent<BasicRoom>().GetRoomTransform(previousDirection);
+            var newDoorTransform = newRoom.GetComponent<BasicRoom>().GetRoomTransform(newDirection);
+
+            Debug.LogFormat("PreviousDoor Position: {0} NewDoor Position: {1}", previousDoorTransform.position, newDoorTransform.position);
+            Debug.LogFormat("PreviousDoor Local Position: {0} NewDoor Local Position: {1}", previousDoorTransform.localPosition, newDoorTransform.localPosition);
+
+            var doorTranslationVector = new Vector3(
+                previousDoorTransform.localPosition.x + System.Math.Abs(newDoorTransform.localPosition.x),
+                previousDoorTransform.localPosition.y + System.Math.Abs(newDoorTransform.localPosition.y) // Not sure about the abs here
             );
+
+            Debug.LogFormat("previousRoomPositionVector: {0} doorTranslationVector: {1}", previousRoomPositionVector, doorTranslationVector);
+
+            translationVector = previousRoomPositionVector + doorTranslationVector;
+            
         }
 
-        //Debug.LogFormat("Resulting Translation Vector: {0}", translationVector);
+        Debug.LogFormat("Resulting Translation Vector: {0}", translationVector);
 
         return translationVector;
     }

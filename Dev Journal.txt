@@ -28,6 +28,22 @@ Not quite, due to an event I forgotten about I had to cut dev time today short. 
 Next Goal:
 Re-work Level Generation script to use new methods
 
+Date:
+May 30, 2018
+
+Summary:
+I continued what I working out last time. I had to re-work my prefab rooms to use the new variables and they seems to be working. I also had to make some project changes to get Visual studio to be able to debug the unity scripts. I got the room generation loop to generate rooms in some path only opening the doors I need for whatever path the rooms are deciding to take the player though. So that progress.
+
+The room translations were still messed up. I tried my hand at it again. This time taking each direction on it's own. I think when I wrote it earlier I tried to optimize it too soon and it wasn't maintainable. The new approach is to create a vector that will place the new room on top of the previous room. Then create a vector that would line up the two doors. Finally, adding the two vectors to be the vector that I use to translate the room.
+
+At this time, no direction is working.
+
+Accomplished last goal?:
+Yes.
+
+Next Goal:
+Get the translation working for any numbers of right directions with any room that I have that goes from left to right.
+
 
 -----TEMPLATE------
 Date:
